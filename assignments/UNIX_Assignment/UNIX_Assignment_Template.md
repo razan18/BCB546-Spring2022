@@ -74,7 +74,7 @@ awk -f transpose.awk snps_only_header_maize_genotypes.txt > transposed_maize_gen
 Before joining, we have to sort the SNP_ID. This will sort based on column 1 and print the standard out into the new files. I also checked if they're sorted.
 ```
 sort -k1,1 transposed_maize_genotypes.txt > sorted_maize_genotypes.txt
-head -n 10 sorted_maize_genotype.txt | cut -c -50 | column -t
+head -n 10 sorted_maize_genotypes.txt | cut -c -50 | column -t
 ```
 
 To join sorted snp and maize 
@@ -124,11 +124,56 @@ cat header.txt teosinte_genotypes.txt > header_teosinte_genotypes.txt
 
 head -n 10 teosinte_genotypes.txt | cut -c -100 | column -t
 ```
+To check the number of columns is 986
+```
+awk -F "\t" '{print NF; exit}' header_teosinte_genotypes.txt
+```
 To extract the groups and maize genotypes to a new file
 ```
-cut -f 3-986 teosinte_maize_genotypes.txt > snps_only_header_teosinte_genotypes.txt
+cut -f 3-986 teosinte_genotypes.txt > snps_only_header_teosinte_genotypes.txt
 ```
 To transpose data after extracting maize data
 ```
 awk -f transpose.awk snps_only_header_teosinte_genotypes.txt > transposed_teosinte_genotypes.txt
+```
+Before joining, we have to sort the SNP_ID. This will sort based on column 1 and print the standard out into the new files. I also checked if they're sorted.
+```
+sort -k1,1 transposed_teosinte_genotypes.txt > sorted_teosinte_genotypes.txt
+head -n 10 sorted_teosinte_genotypes.txt | cut -c -50 | column -t
+```
+To join sorted snp and teosinte
+```
+join -1 1 -2 1 -t $'\t' sorted_cut_snp_pos.txt sorted_teosinte_genotypes.txt > join_teosinte_genotypes.txt
+```
+Sort increasing SNP position for teosinte
+```
+grep -v "multiple" join_teosinte_genotypes.txt | grep -v "unkown" | sort -k3,3n > increase_teosinte_genotypes.txt
+```
+Sort decreasing SNP position for teosinte
+```
+grep -v "multiple" join_teosinte_genotypes.txt | grep -v "unkown" | sort -k3,3nr > decrease_teosinte_genotypes.txt
+```
+Make a file for multiple snps in teosinte genotype
+```
+awk '$3 ~ /^multiple$/' join_teosinte_genotypes.txt > teosinte_multiple.txt
+```
+Make a file for unknown snps in teosinte genotype
+```
+awk '$3 ~ /^unknown$/' join_teosinte_genotypes.txt > teosinte_unknown.txt
+```
+Make directory to put all teosinte data files
+```
+mkdir teosinte_data
+```
+Loop to make individual chromosome files (chr1-10) based on increasing snp position with unknown ?
+```
+for i in {1..10}; do awk '$2== '$i'' increase_teosimte_genotypes.txt | sort -k3,3n > teosinte_data/teosinte_data_chr"$i"_increase.txt; done
+```
+Replace missing value in decreasing teosinte genotype with "-"
+```
+sed 's/?/-/g' decrease_teosinte_genotypes.txt > decrease_teosinte_genotype_dash.txt
+```
+Loop to make individual chromosome files (chr1-10) based on decreasing snp position with unknown "-"
+```
+for i in {1..10}; do awk '$2=='$i'' decrease_teosinte_genotype_dash.txt > teosinte_data/teosinte_chr"$i"_decrease.txt; done
 ```
