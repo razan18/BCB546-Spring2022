@@ -167,13 +167,13 @@ mkdir teosinte_data
 ```
 Loop to make individual chromosome files (chr1-10) based on increasing snp position with unknown ?
 ```
-for i in {1..10}; do awk '$2== '$i'' increase_teosimte_genotypes.txt | sort -k3,3n > teosinte_data/teosinte_data_chr"$i"_increase.txt; done
+for i in {1..10}; do awk '$2== '$i'' increase_teosinte_genotypes.txt | sort -k3,3n > teosinte_data/teosinte_data_chr"$i"_increase.txt; done
 ```
 Replace missing value in decreasing teosinte genotype with "-"
 ```
-sed 's/?/-/g' decrease_teosinte_genotypes.txt > decrease_teosinte_genotype_dash.txt
+sed 's/?/-/g' decrease_teosinte_genotypes.txt > decrease_teosinte_genotypes_dash.txt
 ```
 Loop to make individual chromosome files (chr1-10) based on decreasing snp position with unknown "-"
 ```
-for i in {1..10}; do awk '$2=='$i'' decrease_teosinte_genotype_dash.txt > teosinte_data/teosinte_chr"$i"_decrease.txt; done
+for i in {1..10}; do awk '$2=='$i'' decrease_teosinte_genotypes_dash.txt > teosinte_data/teosinte_chr"$i"_decrease.txt; done
 ```
